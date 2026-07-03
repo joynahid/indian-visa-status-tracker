@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+.next/
+out/
+dist/
+build/
+target/
+
+# Environment & secrets
+.env
+.env.local
+.env.production
+*.json.enc
+*-firebase-adminsdk-*.json
+*-fbsvc-*.json
+gcp-*.json
+service-account*.json
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build context junk
+paddleocr-model/
+
+# Test artifacts
+*.har
+re_*.py
+pw_*.py
+test_*.py
+check_*.py
+find_*.py
+dump_*.py
+original_*.py
+dot.py
+debug_*.py

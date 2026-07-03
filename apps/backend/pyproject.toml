@@ -1,0 +1,58 @@
+[project]
+name = "indian-visa-status"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.9",
+    "beautifulsoup4>=4.12",
+    "ddddocr>=1.6.1",
+    "fastapi>=0.115",
+    "numpy>=2.1",
+    "paddleocr>=2.7",
+    "paddlepaddle>=2.6",
+    "pandas>=2.2",
+    "pillow>=10.4",
+    "playwright>=1.61.0",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "pytesseract>=0.3",
+    "python-dotenv>=1.0",
+    "python-multipart>=0.0.9",
+    "shortuuid>=1.0",
+    "slowapi>=0.1",
+    "uvicorn[standard]>=0.30",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "I", "N", "W", "UP", "B", "C4", "SIM",
+    "ANN", "ARG", "C90", "DTZ", "PIE", "PL", "RSE",
+    "RET", "S104", "T20", "TCH",
+]
+ignore = [
+    "ANN101", "ANN102", "ANN401",
+    "S104",
+    "PLR0913", "PLR2004",
+    "RET504",
+]
+flake8-annotations.allow-star-arg-any = true
+flake8-annotations.mypy-init-return = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+allow_redefinition = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

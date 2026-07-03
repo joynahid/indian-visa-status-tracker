@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - COMMA_SEPARATED_PROXY_URLS=${COMMA_SEPARATED_PROXY_URLS}
+    volumes:
+      - ./apps/backend:/app/
+    networks:
+      - indian-visa
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - BASE_API_URL=http://backend:8765
+      - CI=true
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./apps/frontend:/app/
+      - /app/node_modules/
+      - /app/.next/
+    depends_on:
+      - backend
+    networks:
+      - indian-visa
+
+networks:
+  indian-visa:
+    driver: bridge

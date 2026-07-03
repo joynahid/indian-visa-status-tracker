@@ -1,0 +1,24 @@
+.root {
+  @apply cursor-pointer inline-flex px-5 rounded-sm leading-6 transition ease-in-out duration-150 font-semibold text-center justify-center uppercase py-2 border border-transparent items-center;
+}
+
+.root:hover {
+  @apply opacity-80;
+}
+
+.root:focus {
+  @apply outline-none ring-2 ring-pink-500 ring-opacity-50;
+}
+
+.loading {
+  @apply cursor-not-allowed opacity-60;
+}
+
+.slim {
+  @apply py-2 transform-none normal-case;
+}
+
+.disabled,
+.disabled:hover {
+  @apply cursor-not-allowed opacity-40;
+}
