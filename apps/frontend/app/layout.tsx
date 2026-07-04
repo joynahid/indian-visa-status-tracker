@@ -5,13 +5,15 @@ import { ToastContainer } from 'react-toastify';
 
 import { PropsWithChildren } from 'react';
 
+import Script from 'next/script';
+
 import 'styles/main.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { GoogleTagManager } from '@next/third-parties/google';
 
 import ReactQueryProvider from '@/components/provider';
 import { Providers } from '@/components/themeprovider';
 import GoogleAdsense from '@/components/googlead';
+import AnalyticsPageView from '@/components/analytics';
 
 const meta = {
   title: 'Indian Visa Status',
@@ -33,10 +35,14 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: 'Indian Visa Status',
     robots: meta.robots,
     icons: { icon: meta.favicon },
+    alternates: {
+      canonical: '/'
+    },
     openGraph: {
       title: meta.title,
       description: meta.description,
       images: [meta.cardImage],
+      url: 'https://track.easyindianvisa.com',
       type: 'website',
       siteName: meta.title
     },
@@ -51,13 +57,49 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Easy Indian Visa Status',
+  url: 'https://track.easyindianvisa.com',
+  description: meta.description,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD'
+  }
+};
+
 export default async function RootLayout({ children }: PropsWithChildren) {
-  const gtag = 'G-P16Y2TPP5S';
+  const gaId = 'G-P16Y2TPP5S';
 
   return (
-    <html lang="en">
-      <GoogleTagManager gtmId={gtag} />
+    <html lang="en" suppressHydrationWarning>
+      <Script
+        id="ga-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gaId}', { send_page_view: false });
+          `
+        }}
+      />
+      <Script
+        id="ga-src"
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+      />
       <body className="dark:bg-black loading">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <AnalyticsPageView />
         <Providers>
           <Navbar />
           <ReactQueryProvider>

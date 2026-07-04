@@ -8,6 +8,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from src.routes import router as track_router
+from src.status_routes import router as status_router
 
 
 def create_app() -> FastAPI:
@@ -37,4 +38,5 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     app.include_router(track_router)
+    app.include_router(status_router)
     return app

@@ -21,6 +21,14 @@ export default function Footer() {
             Terms of Use
           </Link>
         </li>
+        <li className="py-3 md:py-0 md:pb-4">
+          <Link
+            href="/status"
+            className="dark:text-white text-zinc-800 transition duration-150 ease-in-out hover:text-zinc-200"
+          >
+            Status
+          </Link>
+        </li>
       </ul>
    
     </footer>

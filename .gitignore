@@ -12,6 +12,10 @@ out/
 dist/
 build/
 target/
+.firebase/
+
+# Ad-hoc debug screenshots (backend has no legitimate image assets)
+apps/backend/*.png
 
 # Environment & secrets
 .env

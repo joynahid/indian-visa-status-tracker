@@ -1,0 +1,10 @@
+# Easy Indian Visa Status
+
+> Check the status of an Indian visa application across multiple official sources at once: Passtrack (IVAC), the Indian government visa portal, and the Indian Mission in Bangladesh.
+
+## Pages
+
+- [Track a visa application](https://track.easyindianvisa.com/): Enter an application ID and passport number to check status across all sources simultaneously.
+- [System status](https://track.easyindianvisa.com/status): Live uptime and health of each data source, checked automatically every 2 hours.
+- [Privacy Policy](https://track.easyindianvisa.com/privacy-policy)
+- [Terms of Use](https://track.easyindianvisa.com/terms-and-condition)

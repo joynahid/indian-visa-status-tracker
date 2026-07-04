@@ -8,6 +8,9 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - COMMA_SEPARATED_PROXY_URLS=${COMMA_SEPARATED_PROXY_URLS}
+      - TWO_CAPTCHA_KEY=${TWO_CAPTCHA_KEY}
+      - STATUS_CHECK_SECRET=${STATUS_CHECK_SECRET}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account-firestore.json
     volumes:
       - ./apps/backend:/app/
     networks:
@@ -20,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - BASE_API_URL=http://backend:8765
+      - BASE_API_URL=http://localhost:8765
       - CI=true
       - WATCHPACK_POLLING=true
     volumes:

@@ -1,4 +1,11 @@
+import { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy — Indian Visa Status',
+  description: 'How Easy Indian Visa Status collects, uses, and protects your data when tracking your Indian visa application.',
+  alternates: { canonical: '/privacy-policy' }
+};
 
 const PrivacyPolicy: React.FC = () => {
   return (

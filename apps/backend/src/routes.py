@@ -4,7 +4,7 @@ import asyncio
 import datetime
 import time
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
@@ -38,22 +38,8 @@ def _get_ip(request: Request) -> str:
 
 
 async def _save_partial(slug: str, **kwargs) -> None:
-    """Save whatever partial results we have so far."""
-    existing = await store.get_retrieval(slug)
-    if existing is None:
-        existing = StoredRetrieval(
-            retrieval_time_seconds=0.0,
-            indianvisa_online_gov_in="",
-            indianvisa_bangladesh_nic_in="",
-            passtrack_applicant_name="",
-            passtrack_received_at_center=False,
-            passtrack_process_initiated=False,
-            passtrack_ready_for_delivery=False,
-            passtrack_delivered_from_center_on=None,
-        )
-    for k, v in kwargs.items():
-        setattr(existing, k, v)
-    await store.save_retrieval(slug, existing)
+    """Atomically merge whatever partial results we have so far (no read-modify-write race)."""
+    await store.merge_retrieval(slug, **kwargs)
 
 
 def _serialize(retrieval: StoredRetrieval, webfile: WeblogEntry | None) -> dict[str, object]:
@@ -283,7 +269,10 @@ async def _safe_indian(base: str, data: PassportTrackInput):
 
 
 @router.get("/track/{slug}")
-async def get_status(slug: str) -> dict[str, object]:
+async def get_status(slug: str, response: Response) -> dict[str, object]:
+    # Personal visa data behind a shareable slug — never let this get indexed.
+    response.headers["X-Robots-Tag"] = "noindex"
+
     inquiry = await store.get_inquiry(slug)
     if not inquiry:
         raise HTTPException(404, "Not found")

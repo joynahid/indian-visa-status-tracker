@@ -1,4 +1,11 @@
+import { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Terms of Use — Indian Visa Status',
+  description: 'Terms and conditions for using Easy Indian Visa Status to track Indian visa applications.',
+  alternates: { canonical: '/terms-and-condition' }
+};
 
 const TermsAndConditions: React.FC = () => {
   return (

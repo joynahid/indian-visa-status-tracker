@@ -1,26 +1,25 @@
-import {
-  MessageSquare,
-  UserCog2Icon,
-} from 'lucide-react';
+import { MessageSquare, UsersRound } from 'lucide-react';
+import { ReactNode } from 'react';
 
-function Row({ url, title, icon, bgcolor }: any) {
-  const bg_color = bgcolor ?? 'white';
+interface RowProps {
+  url: string;
+  title: string;
+  icon: ReactNode;
+  bgClass?: string;
+}
 
+function Row({ url, title, icon, bgClass }: RowProps) {
   return (
-    <div
-      className={`lg:max-w-4xl mx-auto py-2 my-2 rounded-md bg-${bg_color}-200 dark:bg-${bg_color}-900 dark:text-zinc-500`}
-    >
-      <p className="text-sm px-6">
-        <a
-          className="dark:text-white text-slate-900"
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {icon}
-          {title}
-        </a>
-      </p>
+    <div className={`lg:max-w-4xl mx-auto py-2 my-2 rounded-md dark:text-zinc-500 ${bgClass ?? ''}`}>
+      <a
+        className="flex items-center gap-2 text-sm px-6 dark:text-white text-slate-900"
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {icon}
+        {title}
+      </a>
     </div>
   );
 }
@@ -31,16 +30,17 @@ export default function ImportantLinks() {
     <>
       <Row
         url="https://www.facebook.com/profile.php?id=61559092887780"
-        bgcolor="blue"
+        bgClass="bg-blue-200 dark:bg-blue-900"
         title="Follow us on Facebook"
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
             y="0px"
-            width="30"
-            height="30"
+            width="20"
+            height="20"
             viewBox="0 0 48 48"
+            className="shrink-0"
           >
             <path
               fill="#039be5"
@@ -57,13 +57,13 @@ export default function ImportantLinks() {
       <Row
         url="https://form.jotform.com/241713574736461"
         title="Got some time to share your thoughts?"
-        icon={<MessageSquare />}
+        icon={<MessageSquare size={20} className="shrink-0" />}
       />
 
       <Row
         url="https://www.facebook.com/groups/519574620423944"
         title="Join our facebook group for more updates"
-        icon={<UserCog2Icon />}
+        icon={<UsersRound size={20} className="shrink-0" />}
       />
     </>
   );

@@ -187,15 +187,15 @@ export function VisaStatusForm() {
           {!visaStatus.isSuccess ? (
             <div>
               {visaStatus.isError && (
-                <p className="text-red-500">
+                <div className="text-red-500">
                   { typeof (visaStatus.error as any).response?.data?.detail !== 'string' && (visaStatus.error as any)?.response?.data?.detail?.map(
-                    (item: any) => (
-                      <p>
+                    (item: any, idx: number) => (
+                      <p key={idx}>
                         {item.loc[1]}: {item.msg}
                       </p>
                     )
                   )}
-                </p>
+                </div>
               )}
               <Button
                 disabled={visaStatus.isPending}
@@ -346,8 +346,9 @@ const StatusList = (props: any) => {
           Time taken:{' '}
           </span>
           <span className="text-gray-800 dark:text-white">
-            {Math.round((data.processing_time_seconds + Number.EPSILON) * 100) /
-              100 ?? '0'}{' '}
+            {data.processing_time_seconds != null
+              ? Math.round((data.processing_time_seconds + Number.EPSILON) * 100) / 100
+              : '0'}{' '}
             seconds
           </span>
         </p>

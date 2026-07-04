@@ -50,14 +50,14 @@ class Inquiry:
 
 @dataclass
 class StoredRetrieval:
-    retrieval_time_seconds: float
-    indianvisa_online_gov_in: str
-    indianvisa_bangladesh_nic_in: str
-    passtrack_applicant_name: str
-    passtrack_received_at_center: bool
-    passtrack_process_initiated: bool
-    passtrack_ready_for_delivery: bool
-    passtrack_delivered_from_center_on: datetime.datetime | None
+    retrieval_time_seconds: float = 0.0
+    indianvisa_online_gov_in: str = ""
+    indianvisa_bangladesh_nic_in: str = ""
+    passtrack_applicant_name: str = ""
+    passtrack_received_at_center: bool = False
+    passtrack_process_initiated: bool = False
+    passtrack_ready_for_delivery: bool = False
+    passtrack_delivered_from_center_on: datetime.datetime | None = None
     passtrack_response: dict[str, Any] = field(default_factory=dict)
     indian_side_response: dict[str, Any] = field(default_factory=dict)
     bangladeshi_side_response: dict[str, Any] = field(default_factory=dict)

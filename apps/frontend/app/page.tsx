@@ -52,7 +52,7 @@ interface SourceView {
   label: string;
   url: string;
   status: string;
-  applicant_name: string;
+  applicant_name?: string;
   pending: boolean;
   passtrack_processes?: Record<string, string>;
   passtrack_statuses?: Record<string, string>;
@@ -133,13 +133,18 @@ function ResultRow({
 }: SourceView) {
   const done = !pending;
   const hasTable = !!passtrack_processes && Object.keys(passtrack_processes).length > 0;
+  const hasContent = !!applicant_name || !!status || hasTable;
+  const failed = done && !hasContent;
+
   return (
     <div
       className={
         'my-3 p-3 border rounded-md ' +
-        (done
-          ? 'border-green-600/40 dark:border-green-700 bg-green-50 dark:bg-green-950/20'
-          : 'border-zinc-300 dark:border-zinc-700 animate-pulse')
+        (failed
+          ? 'border-amber-500/40 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20'
+          : done
+            ? 'border-green-600/40 dark:border-green-700 bg-green-50 dark:bg-green-950/20'
+            : 'border-zinc-300 dark:border-zinc-700 animate-pulse')
       }
     >
       <div className="flex justify-between items-start">
@@ -155,7 +160,11 @@ function ResultRow({
           </a>
         </div>
         <div className="flex items-center gap-2">
-          {done ? (
+          {failed ? (
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+              Unavailable
+            </span>
+          ) : done ? (
             <Check color="green" size={16} />
           ) : (
             <span className="inline-block w-3 h-3 rounded-full bg-yellow-400 animate-pulse" />
@@ -176,6 +185,12 @@ function ResultRow({
       {hasTable && passtrack_statuses && (
         <ProcessTable processes={passtrack_processes!} statuses={passtrack_statuses} />
       )}
+      {failed && (
+        <p className="text-amber-700 dark:text-amber-400 text-sm mt-2">
+          Couldn't retrieve your status from this source right now. Please check directly
+          at the link above, or try again shortly.
+        </p>
+      )}
     </div>
   );
 }
@@ -186,6 +201,22 @@ function StatusView({ slug }: { slug: string }) {
   const [elapsed, setElapsed] = useState(0);
   const [copied, setCopied] = useState(false);
   const [startTime] = useState(() => Date.now());
+
+  // This page shows someone's personal visa data looked up by a shareable
+  // slug — never let it be indexed, even if a link leaks somewhere public.
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="robots"]');
+    const prevContent = meta?.getAttribute('content') ?? null;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'robots');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', 'noindex, nofollow');
+    return () => {
+      if (prevContent !== null) meta?.setAttribute('content', prevContent);
+    };
+  }, []);
 
   useEffect(() => {
     if (!slug) return;
@@ -200,10 +231,12 @@ function StatusView({ slug }: { slug: string }) {
         setElapsed((Date.now() - startTime) / 1000);
         if (!r.data?.data?.pending) {
           setDone(true);
+          if (timer) clearInterval(timer);
         }
       } catch {
         if (cancelled) return;
         setDone(true);
+        if (timer) clearInterval(timer);
       }
     };
 
@@ -282,11 +315,11 @@ function StatusView({ slug }: { slug: string }) {
       </div>
 
       <div>
-        {sources.map((s) =>
-          s.pending ? (
-            <LoadingRow key={s.key} label={s.label} url={s.url} />
+        {sources.map(({ key, ...rest }) =>
+          rest.pending ? (
+            <LoadingRow key={key} label={rest.label} url={rest.url} />
           ) : (
-            <ResultRow key={s.key} {...s} />
+            <ResultRow key={key} {...rest} />
           )
         )}
       </div>
