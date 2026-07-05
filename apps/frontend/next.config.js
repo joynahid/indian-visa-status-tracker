@@ -2,7 +2,7 @@
 module.exports = {
     output: 'export',
     env: {
-        BASE_API_URL: process.env.BASE_API_URL || 'https://indian-visa-status-595946522239.asia-southeast1.run.app',
+        BASE_API_URL: process.env.BASE_API_URL || 'http://localhost:8765',
     },
     images: { unoptimized: true },
 };

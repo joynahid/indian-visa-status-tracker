@@ -1,26 +1,29 @@
 # Indian Visa Status Tracker
 
 Tracks Indian visa application status across three sources:
-- **passtrack.net** — IVAC application tracking
-- **indianvisaonline.gov.in** — official Indian visa portal
-- **indianvisa-bangladesh.nic.in** — Bangladesh mission
+- `passtrack.net` for IVAC application tracking
+- `indianvisaonline.gov.in` for the official Indian visa portal
+- `indianvisa-bangladesh.nic.in` for the Bangladesh mission
 
 ## Architecture
 
-- **Backend**: FastAPI + Playwright (Chromium) + ddddocr/2captcha
-- **Frontend**: Next.js 14 (App Router, static export → Firebase Hosting)
-- **Deployment**: Backend on Google Cloud Run, Frontend on Firebase Hosting
+- Backend: FastAPI + Playwright (Chromium) + ddddocr/2captcha
+- Frontend: Next.js 14, static export to Firebase Hosting
+- Deployment: Backend on DigitalOcean App Platform, frontend on Firebase Hosting
+- Shared data: DigitalOcean Managed PostgreSQL for inquiries, results, webfiles, and status checks
 
 ## Local Development
 
 ### Backend
+Direct Python development assumes Python 3.12+.
+
 ```bash
 cd apps/backend
 python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .
 playwright install chromium
-cp ../../.env.example .env  # then fill in real values
+cp ../../.env.example .env
 uvicorn main:app --reload --port 8765
 ```
 
@@ -31,41 +34,47 @@ npm install
 BASE_API_URL=http://localhost:8765 npm run dev
 ```
 
-### Docker (full stack)
+### Docker
 ```bash
-cp .env.example .env  # fill in real values
+cp .env.example .env
 docker compose up
 ```
 
 ## Deployment
 
-### Backend → Cloud Run
-```bash
-docker build -f apps/backend/Dockerfile.prod -t REGION-docker.pkg.dev/PROJECT/cloud-run-source-deploy/indian-visa-backend:latest ./apps/backend
-docker push REGION-docker.pkg.dev/PROJECT/cloud-run-source-deploy/indian-visa-backend:latest
-gcloud run deploy indian-visa-status \
-  --image REGION-docker.pkg.dev/PROJECT/cloud-run-source-deploy/indian-visa-backend:latest \
-  --region asia-southeast1 \
-  --set-env-vars "COMMA_SEPARATED_PROXY_URLS=...,TWO_CAPTCHA_KEY=..." \
-  --memory 2Gi --cpu 2 --min-instances 0 --max-instances 10
-```
+### Backend on DigitalOcean App Platform
+The backend runs as a Docker-based service on App Platform and connects to a managed PostgreSQL cluster. It listens on port `8080` and reads its runtime config from App Platform environment variables.
 
-### Frontend → Firebase
+Required runtime env on the backend service:
+
+- `DATABASE_URL`
+- `COMMA_SEPARATED_PROXY_URLS`
+- `TWO_CAPTCHA_KEY`
+- `STATUS_CHECK_SECRET`
+
+The frontend build must point `BASE_API_URL` at the public App Platform ingress URL before you export the static site.
+
+### Frontend on Firebase
 ```bash
 cd apps/frontend
-npm run build
+BASE_API_URL=https://api.example.com npm run build
 firebase deploy --only hosting:app
 ```
 
 ## Key Endpoints
 
-- `POST /track/start` — start tracking in background, returns `{slug, status}`
-- `GET /track/{slug}` — poll for results (returns partial data as each source completes)
+- `POST /track/start` - start tracking in background, returns `{slug, status}`
+- `GET /track/{slug}` - poll for results and partial data
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `COMMA_SEPARATED_PROXY_URLS` | Yes (production) | Singapore proxy URL for Indian visa sites |
+| `COMMA_SEPARATED_PROXY_URLS` | Yes in production | Proxy URL list for Indian visa sites |
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `POSTGRES_DB` | Local/compose | Shared database name |
+| `POSTGRES_USER` | Local/compose | Shared database user |
+| `POSTGRES_PASSWORD` | Local/compose | Shared database password |
 | `TWO_CAPTCHA_KEY` | Recommended | 2captcha API key for captcha fallback |
-| `PORT` | No (default 8080) | Server port |
+| `STATUS_CHECK_SECRET` | Recommended | Shared secret for `/status/run` |
+| `PORT` | No, default `8080` | Server port |

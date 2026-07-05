@@ -100,8 +100,8 @@ export default function StatusPage() {
     const fetchOnce = () => axios.get<SummaryResponse>(`${apiBaseUrl}/status/summary`);
 
     const load = async () => {
-      // Retry a couple times before giving up — a cold-start Cloud Run instance
-      // can transiently fail the very first request after being idle.
+      // Retry a couple times before giving up. Any cold backend can transiently
+      // fail the very first request after being idle.
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const r = await fetchOnce();

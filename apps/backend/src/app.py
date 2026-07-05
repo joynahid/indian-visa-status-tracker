@@ -16,8 +16,10 @@ def create_app() -> FastAPI:
     async def lifespan(app: FastAPI):
         yield
         from src.scrapers.passtrack import close_session as passtrack_close
+        from src.store import store as data_store
 
         await passtrack_close()
+        await data_store.close()
 
     app = FastAPI(title="Indian Visa Status", lifespan=lifespan)
 

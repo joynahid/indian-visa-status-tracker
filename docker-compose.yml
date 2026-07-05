@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-indianvisa}
+      POSTGRES_USER: ${POSTGRES_USER:-indianvisa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-indianvisa}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-indianvisa} -d ${POSTGRES_DB:-indianvisa}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - indian-visa
+
   backend:
     build:
       context: ./apps/backend
@@ -10,9 +28,12 @@ services:
       - COMMA_SEPARATED_PROXY_URLS=${COMMA_SEPARATED_PROXY_URLS}
       - TWO_CAPTCHA_KEY=${TWO_CAPTCHA_KEY}
       - STATUS_CHECK_SECRET=${STATUS_CHECK_SECRET}
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account-firestore.json
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-indianvisa}:${POSTGRES_PASSWORD:-indianvisa}@postgres:5432/${POSTGRES_DB:-indianvisa}
     volumes:
       - ./apps/backend:/app/
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - indian-visa
 
@@ -31,10 +52,14 @@ services:
       - /app/node_modules/
       - /app/.next/
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
       - indian-visa
 
 networks:
   indian-visa:
     driver: bridge
+
+volumes:
+  pgdata:

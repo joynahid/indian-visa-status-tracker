@@ -15,7 +15,8 @@ COPY pyproject.toml ./
 
 RUN pip install --no-cache-dir setuptools \
     "numpy>=2.1" ddddocr \
-    aiohttp beautifulsoup4 fastapi google-cloud-firestore pandas pillow \
+    aiohttp beautifulsoup4 fastapi pandas pillow \
+    psycopg[binary,pool] \
     pydantic pydantic-settings python-dotenv \
     python-multipart shortuuid slowapi "uvicorn[standard]" \
     playwright

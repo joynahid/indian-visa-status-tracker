@@ -38,8 +38,10 @@ def _get_ip(request: Request) -> str:
 
 
 async def _save_partial(slug: str, **kwargs) -> None:
-    """Atomically merge whatever partial results we have so far (no read-modify-write race)."""
-    await store.merge_retrieval(slug, **kwargs)
+    """Seed a retrieval row once, then merge partial fields without read-modify-write."""
+    await store.ensure_retrieval(slug)
+    if kwargs:
+        await store.merge_retrieval(slug, **kwargs)
 
 
 def _serialize(retrieval: StoredRetrieval, webfile: WeblogEntry | None) -> dict[str, object]:

@@ -10,10 +10,9 @@ class Settings(BaseSettings):
 
     comma_separated_proxy_urls: str = ""
     is_production: bool = False
+    database_url: str = ""
     two_captcha_key: str = ""
     track_cache_ttl_seconds: int = 120
-    firestore_project: str = "easy-indian-visa"
-    firestore_database: str = "indian-visa-status"
     status_check_secret: str = ""
 
 

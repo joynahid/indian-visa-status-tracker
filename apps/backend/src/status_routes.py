@@ -21,7 +21,7 @@ def _jsonable(record: dict) -> dict:
 
 @router.post("/run")
 async def trigger_check(x_status_secret: str | None = Header(default=None)) -> dict:
-    """Triggered by Cloud Scheduler on a cron. Requires a shared secret header."""
+    """Triggered by an external scheduler on a cron. Requires a shared secret header."""
     secret = get_settings().status_check_secret
     if not secret or x_status_secret != secret:
         raise HTTPException(403, "Forbidden")
